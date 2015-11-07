@@ -31,7 +31,7 @@ public class LinkReader implements Runnable {
 		Elements links = paragraphs.select("a");
 		Elements headerContainer = doc.select("h1#firstHeading");;
 		String header = headerContainer.first().html();
-		ApplicationHelper.getInstance().addNewWord(comingFrom, header);//gelinen sayfaya bu kelime ekleniyor
+		ApplicationHelper.getInstance().addNewWord(comingFrom, header,findFrequency(paragraphs));//gelinen sayfaya bu kelime ekleniyor
 		System.out.println("header :"+header);
 	    for (Element link : links) {
 	    	if(link.attr("href").startsWith("/wiki/")){
@@ -40,6 +40,13 @@ public class LinkReader implements Runnable {
 	    	}
 	    }
 	    
+	}
+	//frekansi bulucak olan method.
+	//sayfadaki paragraflari alicak.
+	//comingFrom ile gelen kelime ile karsilastirma yapilicak.
+	//Metod suanlik 0 donduruyor. Bu kisim farukta. (Zemberek kutuphanesi buraya dahil edilebilir)
+	private int findFrequency(Elements paragraphs){
+		return 0 ;
 	}
 	@Override
 	public String toString() {

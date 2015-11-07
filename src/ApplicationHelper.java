@@ -9,6 +9,9 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import model.Word;
+import model.WordFrequency;
+
 /**
  * Programin ana kısmı.
  * linkService ile oluşturulan threadler saklaniyor.
@@ -29,7 +32,6 @@ public class ApplicationHelper implements Runnable {
 	private String path;
 	private ExecutorService linkService;
 	private Queue<LinkReader> queueWords;
-	private ArrayList<String> words;
 	private LinkSaver linkSaver;
 	private ApplicationHelper(){
 		linkService = Executors.newCachedThreadPool();
@@ -43,54 +45,26 @@ public class ApplicationHelper implements Runnable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		words = new ArrayList<>();
-		readWords();
 	}
 	/**
 	 *  yeni kelime eklendiginde bu metod cagiriliyor
 	 * @param eklenecek bulunulan sayfa
 	 * @param yeni sayfa altindaki linkler
+	 * @param freq frekans sayisi.
 	 */
-	public void addNewWord(String eklenecek,String yeni){
-		File file = new File(path+"/"+eklenecek);
-		if(!file.exists()){
-			try {
-				file.createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+	public void addNewWord(String eklenecek,String yeni,int freq){
+		Word w1 = null,w2 = null;
+		if((w1 =Word.getWord(eklenecek))==null){
+			w1 = Word.addNewWord(eklenecek);
 		}
-		BufferedWriter yazici = null;
-		try {
-			yazici = new BufferedWriter(new FileWriter(file,true));
-			yazici.append(yeni+"\n");
-			yazici.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
-	/**
-	 * Kelimelerin hepsinin okundugu sinif
-	 */
-	private void readWords(){
-		try {
-			File[] files = new File(path).listFiles();
-			for(int i =0;i<files.length;i++){
-				words.add(files[i].getName());
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
+		w2 = Word.addNewWord(yeni);
+		WordFrequency.bindWords(w1, w2, freq, false);
 	}
 	public void addNewLink(LinkReader yeniLink){
 		if(!linkSaver.isLinkExists(yeniLink.getLink())){
 			this.queueWords.add(yeniLink);
 		}
 	}
-	
 	@Override
 	public void run() {
 		while(true){
